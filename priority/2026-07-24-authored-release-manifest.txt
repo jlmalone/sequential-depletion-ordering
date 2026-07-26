@@ -1,0 +1,11 @@
+Sequential Depletion Ordering authored release manifest
+Created UTC: 2026-07-24T18:16:15Z
+Repository: https://github.com/jlmalone/sequential-depletion-ordering
+Author: Joseph L. Malone
+Title: Sequential Depletion Ordering with Residual-Fraction Costs
+
+SHA-256  sequential_depletion_ordering.pdf  b03b04bc5c4a24a4bf2aeb3002d3520b1658bf38bbfc9092ca541bffd62c5f63
+SHA-256  sequential_depletion_ordering.tex  8d2bd2301ea1559400b93e04f1421c41a97d8306b52f45d9cac0f5fcf95b7dd5
+SHA-256  sequential_depletion_verification.py  4bda56f08187a8b736a5865e510c132ca9d8dce4d0a1716b0742a9baefe4f001
+SHA-256  sequential_depletion_verification.main.kts  05f44fa8f64325e271459be9b5ccfcedcaafafc6853cb7427bde44268460efad
+SHA-256  sn-jnl.cls  36d0c3273a59d48dc6a9c7b080dfa1ec50dc10229d8751568d1f2e490ffa5ecc

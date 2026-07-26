@@ -1,0 +1,886 @@
+\documentclass[pdflatex,iicol,sn-basic]{sn-jnl}
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[nameinlink,noabbrev]{cleveref}
+\usepackage{url}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  pdftitle={Sequential Depletion Ordering with Residual-Fraction Costs},
+  pdfauthor={Joseph L. Malone}
+}
+
+\theoremstyle{thmstyleone}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{thmstyletwo}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{thmstylethree}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{definition}[theorem]{Definition}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\lr}{\le_{\mathrm{lr}}}
+
+\begin{document}
+
+\title[Sequential Depletion Ordering]{Sequential Depletion Ordering with
+Residual-Fraction Costs}
+
+\author{\fnm{Joseph L.} \sur{Malone}\par
+\vspace{2pt}
+{\normalfont\small Contact: m[A]l[o]n\{e\}(a)salient.vision}}
+
+\abstract{
+A fixed collection of positive loads is removed sequentially from a resource
+with permanent reserve \(q\ge 0\). If removing size \(x\) at residual level
+\(R\) costs the residual fraction \(x/R\), the cost of a permutation \(\pi\) is
+\[
+C_q(\pi)
+=
+\sum_{k=1}^{n}
+\frac{x_{\pi(k)}}{q+\sum_{j=k}^{n}x_{\pi(j)}}.
+\]
+An exact adjacent-interchange identity shows that nondecreasing size order
+minimizes \(C_q\) and nonincreasing order maximizes it. For \(q>0\), the
+log-depletion vector \(d_k=\log(R_k/R_{k+1})\) is majorized between the
+decreasing-size and increasing-size extremes, so every Schur-convex functional
+of \(d\) shares those extremes. The same comparison classifies nonlinear stage
+costs \(\sum\phi(x_{\pi(k)}/R_k)\) by the curvature of
+\(g(t)=\phi(1-e^{-t})\).
+
+With precedence constraints, an order-ideal dynamic program computes the
+optimum and smallest-available greedy can fail. For independent sizes totally
+ordered by monotone likelihood ratio, the ex-ante small-first schedule
+minimizes expected cost. For multi-resource loads, componentwise chains retain
+the sorting rule, while heterogeneous vectors admit residual-state preference
+reversals. Related residual-fraction sums appear in cumulative Riemann-sum
+bounds; those results give order-independent integral estimates rather than a
+permutation theory. The contribution is the ordering, majorization, constrained,
+stochastic, and network analysis built on one interchange identity.
+}
+
+\keywords{Scheduling, residual fraction, adjacent interchange, majorization,
+stochastic orders, precedence constraints}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+Suppose a system has residual size \(R\) and a load of size \(x\) is removed.
+The relative shock is \(x/R\). If several fixed loads must be removed in some
+order, each removal changes the residual, so the sequence of shocks depends on
+the order.
+
+Let \(x_1,\dots,x_n>0\) and let \(q\ge 0\) be reserve that is never removed.
+For a permutation \(\pi\) of \([n]=\{1,\ldots,n\}\), define
+\begin{equation}\label{eq:objective}
+C_q(\pi)
+=
+\sum_{k=1}^{n}
+\frac{x_{\pi(k)}}{q+\sum_{j=k}^{n}x_{\pi(j)}}.
+\end{equation}
+General sum-of-ratios programs are hard \citep{SchaibleShi2003}. The suffix
+structure in \eqref{eq:objective} is special: an exact adjacent-interchange
+identity determines the optimum.
+
+The main facts are these.
+\begin{enumerate}[leftmargin=2em]
+  \item Nondecreasing size order minimizes \(C_q\); nonincreasing order maximizes it.
+  \item For \(q>0\), the log-depletion vectors of all permutations lie between
+  the decreasing-size and increasing-size extremes in the majorization order.
+  \item Stage costs \(\phi(x/R)\) inherit those extremal orders according to the
+  curvature of \(g(t)=\phi(1-e^{-t})\).
+  \item With precedence constraints, the optimum is given by a dynamic program
+  over order ideals; the natural smallest-available rule is not always optimal.
+  \item If independent random sizes are totally ordered by monotone likelihood
+  ratio, the corresponding fixed order minimizes expected cost.
+  \item Componentwise-comparable multi-resource loads still sort; for
+  heterogeneous loads, even the locally preferred order can depend on the
+  residual state.
+\end{enumerate}
+
+The deterministic swap argument is classical adjacent interchange in the sense
+of \citet{Smith1956}, \citet{Sidney1975}, and \citet{Lawler1978}. Closely
+related residual-ratio sums also occur as cumulative Riemann sums
+\citep{Pain2026}. For \(q>0\), reverse normalization identifies
+\eqref{eq:objective} exactly with one such sum and yields an order-independent
+integral bound. That result does not compare permutations. The contribution of
+this paper is the permutation theory for \eqref{eq:objective} and the
+majorization, constrained, stochastic, and multi-resource results built on its
+interchange identity.
+
+\section{Related work}
+\label{sec:related}
+
+\subsection{Adjacent interchange and scheduling}
+Local pairwise comparisons are standard in single-machine sequencing
+\citep{Smith1956,Sidney1975,Lawler1978,CorreaSchulz2005,JagerWarode2024}. Those
+arguments usually target completion-time objectives. The cost
+\eqref{eq:objective} is a nested residual-fraction sum, not weighted completion
+time.
+
+\subsection{Cumulative residual fractions}
+\citet{Pain2026} studies sums \(\sum_{i=1}^n a_i g(S_i)\) with \(a_i>0\),
+\(\sum_i a_i=1\), and prefix totals \(S_i=\sum_{j=1}^i a_j\). For decreasing
+integrable \(g\), that work proves
+\[
+\sum_{i=1}^n a_i g(S_i)\le\int_0^1 g(x)\,dx,
+\]
+an order-independent integral upper bound. To make the connection exact, let
+\(X=\sum_i x_i\), set \(\rho=q/X\), reverse the schedule via
+\(\sigma(i)=\pi(n+1-i)\), and define
+\[
+a_i=\frac{x_{\sigma(i)}}{X},
+\qquad
+S_i=\sum_{j=1}^i a_j.
+\]
+Then, for \(q>0\),
+\begin{equation}\label{eq:pain}
+C_q(\pi)
+=
+\sum_{i=1}^n \frac{a_i}{\rho+S_i}
+\le
+\int_0^1\frac{ds}{\rho+s}
+=
+\log\left(1+\frac{X}{q}\right).
+\end{equation}
+The inequality is Pain's theorem with \(g(s)=1/(\rho+s)\). It controls every
+order but neither compares two orders nor identifies an extremal permutation.
+The case \(q=0\) has the same cumulative form with \(g(s)=1/s\), but that
+function is not integrable at zero and is outside the stated integral-bound
+theorem.
+
+\subsection{Majorization}
+Majorization and Karamata's inequality are classical
+\citep{HardyLittlewoodPolya1952,MarshallOlkinArnold2011,Arnold2008}. Here they
+apply to the vector of log residual ratios generated by a permutation.
+
+\subsection{Sequential choice and size-biased order}
+Stagewise terms \(x_i/\sum_{j\in S}x_j\) appear as choice probabilities in Luce
+and Plackett--Luce models and in size-biased residual allocation
+\citep{Luce1959,Plackett1975,PermanPitmanYor1992,PitmanTran2015}. That work
+studies random orders and products of choice probabilities rather than
+optimization of the deterministic sum \eqref{eq:objective}.
+
+\subsection{Stochastic orders and rearrangement}
+Monotone likelihood ratio is a standard stochastic order
+\citep{KarlinRubin1956,ShakedShanthikumar2007}. Bivariate characterizations and
+stochastic rearrangement inequalities provide general foundations for pairwise
+interchange under likelihood-ratio order
+\citep{ShanthikumarYao1991,ChangYao1993}. This paper applies that established
+method to the explicit swap kernel of \(C_q\).
+
+\subsection{Precedence and order ideals}
+Dynamic programming over order ideals is a standard exact method for separable
+costs on linear extensions of a poset \citep{Steiner1984}. The recursion below
+specializes that classical state space to residual-fraction stage costs, with a
+width-based complexity bound and a greedy counterexample for this objective.
+
+\section{The deterministic depletion objective}
+\label{sec:deterministic}
+
+For a permutation \(\pi\), write
+\[
+R_k(\pi)=q+\sum_{j=k}^{n}x_{\pi(j)}
+\]
+for the resource present immediately before stage \(k\). Because every size is
+positive, \(R_k(\pi)\ge x_{\pi(k)}>0\) for all \(k\), including the case
+\(q=0\).
+
+\begin{lemma}[Exact adjacent-interchange identity]
+\label{lem:swap}
+Suppose two adjacent items have sizes \(a,b>0\), and let \(T\ge 0\) be the
+reserve plus the total size of all items scheduled after them. Then
+\begin{align}
+&C_q(\ldots,a,b,\ldots)-C_q(\ldots,b,a,\ldots)\nonumber\\
+&\qquad=
+\frac{ab(a-b)}{(T+a+b)(T+a)(T+b)}.
+\label{eq:swap}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+Only the two displayed stages change. Their difference is
+\begin{align*}
+&\left(\frac{a}{T+a+b}+\frac{b}{T+b}\right)
+-
+\left(\frac{b}{T+a+b}+\frac{a}{T+a}\right)\\
+&=\frac{a-b}{T+a+b}
++\frac{T(b-a)}{(T+a)(T+b)}\\
+&=\frac{ab(a-b)}{(T+a+b)(T+a)(T+b)}.
+\end{align*}
+All denominators are positive because \(a,b>0\) and \(T\ge 0\).
+\end{proof}
+
+\begin{theorem}[Extremal orders]
+\label{thm:sort}
+For every \(q\ge 0\), nondecreasing size order minimizes \(C_q\), and
+nonincreasing size order maximizes \(C_q\). The minimizer and maximizer are
+unique up to permutations of equal-sized items.
+\end{theorem}
+
+\begin{proof}
+If an adjacent pair is inverted, \(a>b\), then \cref{lem:swap} shows that
+swapping it from \((a,b)\) to \((b,a)\) strictly decreases the objective.
+Repeatedly removing inversions yields nondecreasing order. Reversing the
+argument yields nonincreasing order as the maximizer.
+\end{proof}
+
+When \(q=0\), the same theorem gives a harmonic bound.
+
+\begin{corollary}[Harmonic sandwich]
+\label{cor:harmonic}
+Let \(H_n=\sum_{k=1}^n 1/k\). For \(q=0\),
+\[
+C_0(x^{\uparrow})\le H_n\le C_0(x^{\downarrow}),
+\]
+with equality on either side if and only if all sizes are equal.
+\end{corollary}
+
+\begin{proof}
+For \(y_1\le\cdots\le y_n\),
+\[
+\sum_{j=k}^n y_j\ge(n-k+1)y_k,
+\]
+so the \(k\)th term is at most \(1/(n-k+1)\). The descending inequality is
+analogous.
+\end{proof}
+
+\section{Log-depletion majorization}
+\label{sec:majorization}
+
+Assume throughout this section that \(q>0\), so every residual is strictly
+larger than the load about to be removed and every log increment is finite.
+Define the fractional shock and log-depletion shock at stage \(k\) by
+\begin{equation}\label{eq:z-d}
+\begin{aligned}
+z_k(\pi)&=\frac{x_{\pi(k)}}{R_k(\pi)},\\
+d_k(\pi)&=\log\frac{R_k(\pi)}{R_{k+1}(\pi)}
+=-\log(1-z_k(\pi)).
+\end{aligned}
+\end{equation}
+The total log depletion telescopes:
+\begin{equation}\label{eq:fixedsum}
+\sum_{k=1}^n d_k(\pi)
+=\log\frac{q+\sum_i x_i}{q},
+\end{equation}
+independently of \(\pi\).
+
+For vectors \(u,v\in\R^n\) with equal coordinate sums, write \(u\prec v\) when
+\(u\) is majorized by \(v\); equivalently, the sums of the \(m\) largest
+coordinates of \(u\) do not exceed those of \(v\) for \(m<n\)
+\citep{MarshallOlkinArnold2011}.
+
+\begin{theorem}[Log-depletion majorization sandwich]
+\label{thm:maj}
+Let \(d(\pi)=(d_1(\pi),\ldots,d_n(\pi))\). Then every permutation satisfies
+\begin{equation}\label{eq:maj}
+d(x^{\downarrow})\prec d(\pi)\prec d(x^{\uparrow}).
+\end{equation}
+Thus decreasing size order produces the least concentrated log-depletion
+vector, and increasing size order produces the most concentrated one.
+\end{theorem}
+
+\begin{proof}
+Consider an adjacent inversion \(a\ge b\) with tail resource \(T>0\). Before
+swapping, the two log shocks are
+\[
+u_1=\log\frac{T+a+b}{T+b},
+\qquad
+u_2=\log\frac{T+b}{T}.
+\]
+After swapping to \((b,a)\), they are
+\[
+v_1=\log\frac{T+a+b}{T+a},
+\qquad
+v_2=\log\frac{T+a}{T}.
+\]
+The pair sums are equal. Also
+\[
+\begin{aligned}
+u_2&\le v_2,\\
+u_1&=\log\left(1+\frac{a}{T+b}\right)\\
+&\le\log\left(1+\frac{a}{T}\right)=v_2.
+\end{aligned}
+\]
+Hence \(\max\{u_1,u_2\}\le\max\{v_1,v_2\}\). For two-dimensional vectors of
+equal sum, this is exactly \((u_1,u_2)\prec(v_1,v_2)\). Replacing two
+coordinates by a vector that majorizes them preserves majorization after
+adjoining all unchanged coordinates. Repeated swaps from decreasing to
+increasing size order prove \eqref{eq:maj}.
+\end{proof}
+
+\begin{corollary}[Universal convex-risk ordering]
+\label{cor:convex}
+For every convex function \(g\) on \([0,\infty)\),
+\[
+\sum_k g(d_k(x^{\downarrow}))
+\le
+\sum_k g(d_k(\pi))
+\le
+\sum_k g(d_k(x^{\uparrow})).
+\]
+For concave \(g\), both inequalities reverse.
+\end{corollary}
+
+\begin{proof}
+Apply Karamata's inequality to \cref{thm:maj}
+\citep{HardyLittlewoodPolya1952,MarshallOlkinArnold2011}.
+\end{proof}
+
+Consequently, decreasing size order minimizes the maximum log shock, every
+\(\ell_p\) norm with \(p>1\), the variance of the log-shock vector, and every
+separable convex risk measure on \(d\). Increasing order minimizes the raw
+fraction sum because \(z=1-e^{-d}\) is concave in \(d\).
+
+\subsection{Nonlinear stage penalties and a phase transition}
+
+Let \(\phi:[0,1)\to\R\) and define
+\begin{equation}\label{eq:nonlinear}
+J_{\phi,q}(\pi)=\sum_{k=1}^n\phi(z_k(\pi)).
+\end{equation}
+Set
+\[
+g_\phi(t)=\phi(1-e^{-t}).
+\]
+
+\begin{corollary}[Curvature classification]
+\label{cor:curvature}
+If \(g_\phi\) is concave, increasing size order minimizes \(J_{\phi,q}\) and
+decreasing size order maximizes it. If \(g_\phi\) is convex, decreasing size
+order minimizes \(J_{\phi,q}\) and increasing size order maximizes it.
+\end{corollary}
+
+If \(\phi\) is twice differentiable and \(z=1-e^{-t}\), then
+\begin{equation}\label{eq:curvature}
+g_\phi''(t)
+=(1-z)\bigl((1-z)\phi''(z)-\phi'(z)\bigr).
+\end{equation}
+The order-invariant boundary solves
+\[
+(1-z)\phi''(z)=\phi'(z),
+\]
+so
+\begin{equation}\label{eq:boundary}
+\phi(z)=A[-\log(1-z)]+B.
+\end{equation}
+
+An explicit family makes the transition concrete. For \(\alpha\in\R\), define
+\begin{equation}\label{eq:alpha}
+\phi_\alpha(z)=
+\begin{cases}
+\displaystyle\frac{(1-z)^{-\alpha}-1}{\alpha},&\alpha\ne0,\\[6pt]
+-\log(1-z),&\alpha=0.
+\end{cases}
+\end{equation}
+Then
+\[
+\phi_\alpha(1-e^{-t})=
+\begin{cases}
+(e^{\alpha t}-1)/\alpha,&\alpha\ne0,\\
+t,&\alpha=0,
+\end{cases}
+\]
+and its second derivative has the sign of \(\alpha\).
+
+\begin{corollary}[Small-first / log-invariant / large-first transition]
+\label{cor:phase}
+For the family \eqref{eq:alpha}:
+\begin{enumerate}[label=(\roman*),leftmargin=2em]
+\item if \(\alpha<0\), increasing size order minimizes \(J_{\phi_\alpha,q}\);
+\item if \(\alpha=0\), every order has identical cost;
+\item if \(\alpha>0\), decreasing size order minimizes \(J_{\phi_\alpha,q}\).
+\end{enumerate}
+In particular, \(\alpha=-1\) recovers the raw fraction \(\phi(z)=z\), while
+\(\alpha=1\) recovers the post-removal odds \(\phi(z)=z/(1-z)\).
+\end{corollary}
+
+Three natural ways to score depletion therefore sit on opposite sides of the
+same line: residual share before removal, pure log change, and residual share
+after removal.
+
+\section{Precedence-constrained depletion}
+\label{sec:precedence}
+
+Let \(P=(V,\preceq)\) be a finite precedence poset. A feasible schedule is a
+linear extension of \(P\). For \(S\subseteq V\), let
+\[
+Q(S)=q+\sum_{j\in V\setminus S}x_j.
+\]
+A set \(S\) is an order ideal if \(j\in S\) and \(i\preceq j\) imply \(i\in S\).
+Let \(A(S)\) be the set of minimal elements of \(V\setminus S\); these are the
+jobs available next. As in the unconstrained case, every size is positive, so
+\(Q(S)>0\) for every proper ideal \(S\).
+
+\begin{theorem}[Exact dynamic program over ideals]
+\label{thm:dp}
+Define \(F(V)=0\) and, for every proper order ideal \(S\),
+\begin{equation}\label{eq:dp}
+F(S)=\min_{i\in A(S)}
+\left\{
+\frac{x_i}{Q(S)}+F(S\cup\{i\})
+\right\}.
+\end{equation}
+Then \(F(\varnothing)\) is the minimum of \(C_q\) over all linear extensions of
+\(P\).
+\end{theorem}
+
+\begin{proof}
+Every feasible continuation from \(S\) must choose an available minimal element
+\(i\in A(S)\). Its immediate denominator is \(Q(S)\), independent of which
+available job is selected. After choosing \(i\), the processed set is the ideal
+\(S\cup\{i\}\). The principle of optimality gives \eqref{eq:dp}.
+\end{proof}
+
+Let \(\cI(P)\) be the set of order ideals and let \(w\) be the width of \(P\).
+
+\begin{proposition}[Width-sensitive complexity]
+\label{prop:width}
+With available sets maintained incrementally, \eqref{eq:dp} can be evaluated in
+\(O(w|\cI(P)|)\) state transitions, up to input-preprocessing costs. If a
+width-\(w\) chain decomposition has chain lengths \(n_1,\ldots,n_w\), then
+\begin{equation}\label{eq:idealsbound}
+|\cI(P)|\le\prod_{r=1}^w(n_r+1),
+\end{equation}
+so the algorithm is polynomial for every fixed width \(w\).
+\end{proposition}
+
+\begin{proof}
+The available set is an antichain, hence has size at most \(w\). An ideal
+intersects each chain in a prefix, and therefore injects into the tuple of its
+\(w\) prefix lengths, proving \eqref{eq:idealsbound}.
+\end{proof}
+
+In general this is exponential in \(n\). For fixed width it is \(n^{O(w)}\). The
+unconstrained increasing-order cost of the remaining jobs is also an admissible
+lower bound for branch-and-bound.
+
+\begin{lemma}[Local inversion exclusion]
+\label{lem:local}
+No optimal linear extension contains adjacent incomparable jobs \(i,j\) with
+\(x_i>x_j\) in that order.
+\end{lemma}
+
+\begin{proof}
+Because the jobs are incomparable and adjacent, swapping them preserves
+feasibility. The swap strictly reduces cost by \cref{lem:swap}.
+\end{proof}
+
+Local inversion exclusion does not justify a smallest-available greedy policy.
+
+\begin{example}[Smallest available can be suboptimal]
+\label{ex:greedy}
+Let \(q=1\) and let \(A\prec C\), with \(B\) incomparable to both. Set
+\[
+(x_A,x_B,x_C)=(8,7,2).
+\]
+Initially, \(A\) and \(B\) are available, so smallest-available chooses \(B\),
+producing
+\[
+C_1(B,A,C)=\frac7{18}+\frac8{11}+\frac23\approx1.7828.
+\]
+The feasible order \((A,C,B)\) has
+\[
+C_1(A,C,B)=\frac8{18}+\frac2{10}+\frac78\approx1.5194.
+\]
+Processing the larger predecessor first unlocks the very small successor and is
+globally preferable.
+\end{example}
+
+\section{Stochastic sizes under likelihood-ratio order}
+\label{sec:stochastic}
+
+Suppose sizes are independent positive random variables \(X_1,\ldots,X_n\), and
+the schedule must be selected ex ante. Let all variables admit densities with
+respect to a common dominating measure. Recall that \(X\lr Y\) if
+\(f_Y(x)/f_X(x)\) is nondecreasing wherever defined
+\citep{ShakedShanthikumar2007}.
+
+\begin{theorem}[Stochastic small-first rule under MLR order]
+\label{thm:stochastic}
+Assume
+\[
+X_1\lr X_2\lr\cdots\lr X_n.
+\]
+Then the order \((1,2,\ldots,n)\) minimizes \(\E[C_q(\pi)]\) over all fixed
+permutations \(\pi\). Reversing the order maximizes the expectation. Under
+strict likelihood-ratio inequalities on sets of positive measure, the extremal
+orders are unique up to identically distributed jobs.
+\end{theorem}
+
+\begin{proof}
+It suffices to compare an adjacent pair \(X,Y\) with \(X\lr Y\). Let \(T\ge0\)
+be the reserve plus the sum of all random sizes after the pair. Independence
+makes \(T\) independent of \((X,Y)\). Conditional on \(T=t\), \cref{lem:swap}
+gives
+\begin{equation}\label{eq:hkernel}
+h_t(x,y)
+=
+\frac{xy(x-y)}{(t+x+y)(t+x)(t+y)}
+\end{equation}
+after subtracting the cost of order \((Y,X)\) from that of order \((X,Y)\). The
+kernel is antisymmetric and positive when \(x>y\). Pairing the regions \(x>y\)
+and \(y>x\) yields
+\begin{align*}
+\E[h_t(X,Y)]
+&=\int_{x>y} h_t(x,y)\\
+&\quad{}\times
+\bigl[f_X(x)f_Y(y)-f_X(y)f_Y(x)\bigr]\,dx\,dy.
+\end{align*}
+For \(x>y\), likelihood-ratio order implies
+\[
+\frac{f_Y(x)}{f_X(x)}\ge\frac{f_Y(y)}{f_X(y)},
+\]
+so the bracketed factor is nonpositive. Therefore \(\E[h_t(X,Y)]\le0\) for every
+\(t\), and hence
+\[
+\E[C_q(\ldots,X,Y,\ldots)]
+\le
+\E[C_q(\ldots,Y,X,\ldots)].
+\]
+Adjacent interchanges sort the jobs into likelihood-ratio order. Reversing each
+comparison gives the maximizer.
+\end{proof}
+
+\begin{corollary}[Common parametric families]
+\label{cor:families}
+The stochastic theorem applies to, among others:
+\begin{enumerate}[label=(\roman*),leftmargin=2em]
+\item exponential sizes, ordered by decreasing rate;
+\item gamma sizes with common shape, ordered by decreasing rate;
+\item lognormal sizes with common variance, ordered by increasing log-location
+parameter.
+\end{enumerate}
+\end{corollary}
+
+Ordering by expected size is not enough. Likelihood-ratio order controls the
+sign of the full antisymmetric swap kernel in every tail state.
+
+\section{Multi-resource and network depletion}
+\label{sec:network}
+
+Let there be \(m\) resource pools. Item \(i\) has a nonnegative load vector
+\[
+x_i=(x_{i1},\ldots,x_{im})\in\R_+^m
+\]
+that is not the zero vector, resource \(r\) has reserve \(q_r>0\), and
+\(w_r>0\) is its importance weight. The network objective is
+\begin{equation}\label{eq:networkobjective}
+C^{\mathrm{net}}(\pi)
+=
+\sum_{r=1}^m w_r
+\sum_{k=1}^{n}
+\frac{x_{\pi(k),r}}
+{q_r+\sum_{j=k}^n x_{\pi(j),r}},
+\end{equation}
+The positive reserves keep every resourcewise denominator well defined even
+when an item has zero load on a particular resource.
+
+\begin{lemma}[Network swap identity]
+\label{lem:netswap}
+For adjacent load vectors \(a,b\in\R_+^m\) and tail resources \(T_r>0\),
+\begin{equation}\label{eq:netswap}
+\Delta(a,b;T)
+=
+\sum_{r=1}^m
+w_r
+\frac{a_rb_r(a_r-b_r)}
+{(T_r+a_r+b_r)(T_r+a_r)(T_r+b_r)},
+\end{equation}
+where \(\Delta\) is the cost of \((a,b)\) minus the cost of \((b,a)\).
+\end{lemma}
+
+\begin{proof}
+The network objective is a nonnegative weighted sum of single-resource
+objectives. The algebra in \cref{lem:swap} remains valid when \(a_r=0\) or
+\(b_r=0\) because \(T_r>0\). Summing the weighted resourcewise differences
+gives \eqref{eq:netswap}.
+\end{proof}
+
+\begin{theorem}[Componentwise-chain ordering]
+\label{thm:chain}
+Suppose the item load vectors form a chain under componentwise order. Then any
+componentwise nondecreasing order minimizes \(C^{\mathrm{net}}\), and the reverse
+order maximizes it. In particular, if \(x_i=s_i v\) for a common profile
+\(v\in\R_+^m\setminus\{0\}\) and scalars \(s_i>0\), sorting the scalar magnitudes
+\(s_i\) increasingly is optimal.
+\end{theorem}
+
+\begin{proof}
+If \(a\ge b\) componentwise, every summand in \eqref{eq:netswap} is nonnegative.
+Swapping \((a,b)\) to \((b,a)\) therefore cannot increase cost. Repeated
+adjacent interchanges prove the claim.
+\end{proof}
+
+For resources with \(q_r>0\), each resource has its own log-depletion vector.
+Under the componentwise-chain assumption, the same adjacent swaps move every
+such resource's log vector in the same majorization direction. Decreasing
+componentwise order therefore minimizes every separable convex risk
+\[
+\sum_{r=1}^m w_r\sum_{k=1}^n g_r(d_{k,r})
+\]
+with convex \(g_r\), while increasing order minimizes the raw-fraction objective
+\eqref{eq:networkobjective}.
+
+The chain assumption is essentially the limit of any context-free sorting rule.
+
+\begin{theorem}[Context reversal for pairwise priorities]
+\label{thm:reversal}
+For heterogeneous load vectors, the locally preferred order of a fixed pair can
+reverse as the residual network state changes. Consequently, no priority
+relation depending only on the two item vectors can agree with the optimal
+adjacent order for all tail states.
+\end{theorem}
+
+\begin{proof}
+Take two resources with equal weights and
+\[
+a=(4,1),\qquad b=(1,3).
+\]
+For tail state \(T=(1,1)\), \eqref{eq:netswap} gives
+\[
+\Delta(a,b;(1,1))
+=
+\frac{4\cdot1\cdot3}{6\cdot5\cdot2}
++
+\frac{1\cdot3\cdot(-2)}{5\cdot2\cdot4}
+=
+\frac1{20}>0.
+\]
+Hence \((b,a)\) is locally cheaper. For tail state \(T=(10,1)\),
+\[
+\Delta(a,b;(10,1))
+=
+\frac{2}{385}-\frac3{20}
+=-\frac{223}{1540}<0,
+\]
+so \((a,b)\) is locally cheaper. Since the same pair requires opposite orders in
+two residual states, no context-free relation on item vectors alone can be
+universally correct.
+\end{proof}
+
+This does not rule out state-dependent policies, dynamic programming,
+approximation algorithms, or static indices on restricted load geometries. It
+shows that no scalar priority can reproduce the correct adjacent comparison in
+every residual state of the unrestricted network model.
+
+\section{Economic and computing interpretations}
+\label{sec:applications}
+
+The model applies only when stage cost is genuinely proportional to the share of
+capacity present immediately before the action. It is not a substitute for
+travel cost, fixed setup cost, deadline penalties, price impact, or other
+domain-specific effects.
+
+\subsection{Computing systems}
+Natural targets include staged retirement of servers, shards, replicas, or
+service capacity; memory reclamation; and dependency-constrained
+decommissioning. The raw-fraction objective favors removing small components
+first. Convex functions of log depletion favor large-first schedules that smooth
+multiplicative shocks. In a multi-resource system, loads may represent CPU,
+memory, bandwidth, storage, or regional redundancy. \Cref{thm:reversal} says
+heterogeneous systems generally need state-aware scheduling.
+
+\subsection{Logistics and infrastructure}
+Loads may represent warehouse zones, generation units, supplier capacity, or
+temporary emergency resources. Precedence captures operational dependencies. The
+stochastic theorem applies when uncertain loads sit in a likelihood-ratio-ordered
+family, which is stronger than sorting means.
+
+\subsection{Economics}
+In a stylized market-exit or subsidy-withdrawal model, \(x_i/R_k\) is a
+participant's share of the remaining system. Increasing order minimizes the sum
+of ordinary percentage shocks. Decreasing order minimizes convex concentration
+risk in continuously compounded shocks. A reserve \(q\) can represent outside
+liquidity, a backstop, permanent capacity, or a diversified outside option.
+Larger \(q\) weakens every pairwise ordering penalty in \eqref{eq:swap}.
+
+\Cref{cor:phase} is the policy point: ``minimize disruption'' is incomplete until
+disruption is specified as a concave aggregate of ordinary shares, an additive
+log change, or a convex tail-risk measure.
+
+\section{Limitations and open problems}
+\label{sec:open}
+
+\begin{enumerate}[leftmargin=2em]
+\item \textbf{Complexity under precedence.} There is an exact ideal DP and a
+greedy counterexample, but no NP-hardness classification or approximation
+guarantee.
+\item \textbf{Stochastic orders.} Likelihood-ratio order is strong.
+Whether hazard-rate, dispersive, or usual stochastic order suffices for useful
+subclasses is open.
+\item \textbf{Network case.} Context reversal rules out a universal
+context-free adjacent priority rule. Complexity and approximability of the
+unrestricted multi-resource problem remain open.
+\item \textbf{Empirical calibration.} Applications need evidence that fraction or
+log shock is the actual cost, not just a convenient surrogate.
+\item \textbf{Online models.} Items may arrive over time or reveal size only when
+processed. Competitive analysis and regret bounds are natural next steps.
+\end{enumerate}
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+A nested residual-fraction objective has an exact adjacent-interchange law:
+small-first minimizes the raw cost, large-first maximizes it. The log
+representation gives a stronger majorization fact: large-first smooths
+multiplicative depletion, while small-first concentrates it. The same identity
+drives an order-ideal DP under precedence, an MLR expectation theorem under
+independent random sizes, and a componentwise sorting rule for multi-resource
+chains. In heterogeneous networks, even a fixed pair can reverse local
+preference with the residual state, marking a boundary for context-free
+pairwise priorities.
+
+Related cumulative residual-fraction sums already admit order-independent
+integral bounds \citep{Pain2026}. The claim of this research is the permutation
+theory for \eqref{eq:objective} and the package around one interchange identity,
+not a new residual-ratio expression in isolation and not a new interchange
+technique.
+
+\section*{Declarations}
+
+\subsection*{Funding}
+This research received no external funding.
+
+\subsection*{Competing interests}
+The author declares no competing interests.
+
+\subsection*{Data availability}
+No datasets were generated or analysed in this study.
+
+\subsection*{Code availability}
+Companion Python and Kotlin verification scripts supplied with the manuscript
+perform randomized numerical checks of the swap identity and majorization
+theorem, enumerate the precedence counterexample, evaluate the two network
+context states, and Monte Carlo check the stochastic theorem for exponential
+sizes. The scripts are provided for transcription checks only and do not
+replace the proofs.
+
+\begingroup
+\setlength{\bibsep}{0.5em}
+\begin{thebibliography}{99}
+\raggedright
+
+\bibitem[Arnold(2007)]{Arnold2008}
+Arnold~BC (2007) Majorization: Here, there and everywhere.
+\emph{Statistical Science} 22(3):407--413.
+\url{https://doi.org/10.1214/0883423060000000097}
+
+\bibitem[Chang and Yao(1993)]{ChangYao1993}
+Chang~CS, Yao~DD (1993) Rearrangement, majorization and stochastic scheduling.
+\emph{Mathematics of Operations Research} 18(3):658--684.
+\url{https://doi.org/10.1287/moor.18.3.658}
+
+\bibitem[Correa and Schulz(2005)]{CorreaSchulz2005}
+Correa~JR, Schulz~AS (2005) Single-machine scheduling with precedence
+constraints.
+\emph{Mathematics of Operations Research} 30(4):1005--1021.
+\url{https://doi.org/10.1287/moor.1050.0158}
+
+\bibitem[Hardy et~al.(1952)]{HardyLittlewoodPolya1952}
+Hardy~GH, Littlewood~JE, P\'olya~G (1952) \emph{Inequalities}, 2nd~edn.
+Cambridge University Press, Cambridge
+
+\bibitem[J\"ager and Warode(2024)]{JagerWarode2024}
+J\"ager~S, Warode~P (2024) Simple approximation algorithms for minimizing the
+total weighted completion time of precedence-constrained jobs.
+In: \emph{Proceedings of the 2024 Symposium on Simplicity in Algorithms (SOSA)}.
+SIAM, pp~82--96.
+\url{https://doi.org/10.1137/1.9781611977936.8}
+
+\bibitem[Karlin and Rubin(1956)]{KarlinRubin1956}
+Karlin~S, Rubin~H (1956) The theory of decision procedures for distributions
+with monotone likelihood ratio.
+\emph{The Annals of Mathematical Statistics} 27(2):272--299.
+\url{https://doi.org/10.1214/aoms/1177728259}
+
+\bibitem[Lawler(1978)]{Lawler1978}
+Lawler~EL (1978) Sequencing jobs to minimize total weighted completion time
+subject to precedence constraints.
+\emph{Annals of Discrete Mathematics} 2:75--90.
+\url{https://doi.org/10.1016/S0167-5060(08)70323-6}
+
+\bibitem[Luce(1959)]{Luce1959}
+Luce~RD (1959) \emph{Individual Choice Behavior: A Theoretical Analysis}.
+Wiley, New York
+
+\bibitem[Marshall et~al.(2011)]{MarshallOlkinArnold2011}
+Marshall~AW, Olkin~I, Arnold~BC (2011) \emph{Inequalities: Theory of
+Majorization and Its Applications}, 2nd~edn.
+Springer, New York.
+\url{https://doi.org/10.1007/978-0-387-68276-1}
+
+\bibitem[Pain(2026)]{Pain2026}
+Pain~JC (2026) Cumulative Riemann sums, distribution functions, and a universal
+inequality. arXiv:2603.08959.
+\url{https://doi.org/10.48550/arXiv.2603.08959}
+
+\bibitem[Perman et~al.(1992)]{PermanPitmanYor1992}
+Perman~M, Pitman~J, Yor~M (1992) Size-biased sampling of Poisson point processes
+and excursions.
+\emph{Probability Theory and Related Fields} 92(1):21--39.
+\url{https://doi.org/10.1007/BF01205234}
+
+\bibitem[Pitman and Tran(2015)]{PitmanTran2015}
+Pitman~J, Tran~NM (2015) Size-biased permutation of a finite sequence with
+independent and identically distributed terms.
+\emph{Bernoulli} 21(4):2484--2512.
+\url{https://doi.org/10.3150/14-BEJ652}
+
+\bibitem[Plackett(1975)]{Plackett1975}
+Plackett~RL (1975) The analysis of permutations.
+\emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}
+24(2):193--202.
+\url{https://doi.org/10.2307/2346567}
+
+\bibitem[Schaible and Shi(2003)]{SchaibleShi2003}
+Schaible~S, Shi~J (2003) Fractional programming: The sum-of-ratios case.
+\emph{Optimization Methods and Software} 18(2):219--229.
+\url{https://doi.org/10.1080/1055678031000105242}
+
+\bibitem[Shaked and Shanthikumar(2007)]{ShakedShanthikumar2007}
+Shaked~M, Shanthikumar~JG (2007) \emph{Stochastic Orders}.
+Springer, New York.
+\url{https://doi.org/10.1007/978-0-387-34675-5}
+
+\bibitem[Shanthikumar and Yao(1991)]{ShanthikumarYao1991}
+Shanthikumar~JG, Yao~DD (1991) Bivariate characterization of some stochastic
+order relations.
+\emph{Advances in Applied Probability} 23(3):642--659.
+\url{https://doi.org/10.2307/1427627}
+
+\bibitem[Sidney(1975)]{Sidney1975}
+Sidney~JB (1975) Decomposition algorithms for single-machine sequencing with
+precedence relations and deferral costs.
+\emph{Operations Research} 23(2):283--298.
+\url{https://doi.org/10.1287/opre.23.2.283}
+
+\bibitem[Smith(1956)]{Smith1956}
+Smith~WE (1956) Various optimizers for single-stage production.
+\emph{Naval Research Logistics Quarterly} 3(1--2):59--66.
+\url{https://doi.org/10.1002/nav.3800030106}
+
+\bibitem[Steiner(1984)]{Steiner1984}
+Steiner~G (1984) Single machine scheduling with precedence constraints of
+dimension 2.
+\emph{Mathematics of Operations Research} 9(2):248--259.
+\url{https://doi.org/10.1287/moor.9.2.248}
+
+\end{thebibliography}
+\endgroup
+
+\end{document}
